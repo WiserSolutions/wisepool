@@ -5,7 +5,7 @@ const InMemoryRepository = require('./../lib/in_memory_repository')
 describe('AbstractPool', function() {
   var resource
   beforeEach(function*() {
-    resource = {id: faker.random.uuid()}
+    resource = { content: faker.random.uuid() }
   })
 
   describe('acquire', function() {
@@ -48,6 +48,16 @@ describe('AbstractPool', function() {
         yield pool.initialize()
         expect(yield pool.acquire()).to.be.null
       })
+    })
+  })
+
+  describe('release', function() {
+    it ('returns the resource back to pool', function*() {
+      var pool = new Pool()
+      yield pool.register(resource)
+      var r = yield pool.acquire()
+      yield pool.release(r.id)
+      expect(yield pool.acquire()).to.equal(resource)
     })
   })
 
