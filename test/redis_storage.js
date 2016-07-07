@@ -3,6 +3,7 @@ const co = require('co')
 
 describe("RedisStorage", function() {
   var storage, resource
+
   beforeEach(function*() {
     resource = { id: faker.random.uuid() }
     storage = new RedisStorage()
@@ -12,7 +13,6 @@ describe("RedisStorage", function() {
   describe("add", function() {
     it ('returns empty array when no resources', function*() {
       var resources = yield storage.getAll()
-      // expect(resources).to.be.empty
       expect(resources).to.deep.equal([])
     })
 
@@ -76,6 +76,18 @@ describe("RedisStorage", function() {
       var res = yield storage.acquire()
       yield storage.release(res.id)
       expect(yield storage.getAll()).to.deep.equal([resource])
+    })
+  })
+
+  describe('isEmpty', function() {
+    it ('returns true for absent :pool key', function*() {
+      yield storage.redis.delAsync('resources:pool')
+      expect(yield storage.isEmpty()).to.be.true
+    })
+
+    it ('returns false for non-empty :pool key', function*() {
+      yield storage.redis.lpushAsync('resources:pool', 1)
+      expect(yield storage.isEmpty()).to.be.false
     })
   })
 })

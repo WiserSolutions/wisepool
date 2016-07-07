@@ -135,4 +135,20 @@ describe('AbstractPool', function() {
       })
     })
   })
+
+  describe('.initialize', function() {
+    it ('does not initialize the pool with duplicate resources', function*() {
+      var repository = new InMemoryRepository()
+      yield repository.add([resource])
+
+      var storage = new InMemoryStorage()
+
+      var pool1 = new Pool({repository, storage})
+      yield pool1.initialize()
+      var pool2 = new Pool({repository, storage})
+      yield pool2.initialize()
+
+      expect(yield pool1.storage.getAll()).to.deep.equal([resource])
+    })
+  })
 })
