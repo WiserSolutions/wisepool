@@ -90,4 +90,13 @@ describe("RedisStorage", function() {
       expect(yield storage.isEmpty()).to.be.false
     })
   })
+
+  describe('getCount', function() {
+    it ('returns number of acquired and pooled resources', function*() {
+      yield storage.add({id: 1, content: 2})
+      yield storage.add({id: 2, content: 3})
+      yield storage.acquire()
+      expect(yield storage.getCount()).to.equal(2)
+    })
+  })
 })

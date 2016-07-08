@@ -35,6 +35,23 @@ describe('AbstractPool', function() {
         expect(yield pool.acquire()).to.equal(resource)
       })
 
+      describe('max', function() {
+        it ('returns null if current >= max', function*() {
+          repository.create = function*() { return resource }
+          var pool = new Pool({repository, max: 1})
+          yield pool.register({content: faker.random.uuid()})
+          yield pool.initialize()
+          yield pool.acquire()
+          expect(yield pool.acquire()).to.be.null
+        })
+
+        it('creates a resource if current < max', function*() {
+          repository.create = function*() { return resource}
+          var pool = new Pool({repository, max: 1})
+          expect(yield pool.acquire()).to.equal(resource)
+        })
+      })
+
       it ('returns null if resource can not be created', function*() {
         repository.create = function*() { return null }
         var pool = new Pool({repository})
