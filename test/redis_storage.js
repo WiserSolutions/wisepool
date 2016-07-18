@@ -49,10 +49,24 @@ describe("RedisStorage", function() {
         .to.deep.equal([])
     })
 
-    it ('accepts id', function*() {
+    it ('removes the resource from the pool (by id)', function*() {
       yield storage.remove(resource.id)
       expect(yield storage.getAll())
         .to.deep.equal([])
+    })
+
+    it ('handles acquired resources', function*() {
+      yield storage.acquire()
+      yield storage.remove(resource)
+      yield storage.release(resource.id)
+      expect(yield storage.getCount()).to.equal(0)
+    })
+
+    it ('handles acquired resources (by id)', function*() {
+      yield storage.acquire()
+      yield storage.remove(resource.id)
+      yield storage.release(resource.id)
+      expect(yield storage.getCount()).to.equal(0)
     })
   })
 

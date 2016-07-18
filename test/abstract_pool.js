@@ -68,6 +68,39 @@ describe('AbstractPool', function() {
     })
   })
 
+  describe('destroy', function() {
+    it ('removes the resource from pool', function*() {
+      var pool = new Pool()
+      yield pool.register(resource)
+      yield pool.destroy(resource.id)
+      expect(yield pool.acquire()).to.be.null
+    })
+
+    it ('handles acquired resources', function*() {
+      var pool = new Pool()
+      yield pool.register(resource)
+      yield pool.acquire()
+      yield pool.destroy(resource.id)
+      yield pool.release(resource.id)
+      expect(yield pool.acquire()).to.be.null
+    })
+
+    describe('repository', function() {
+      it ('destroys the resource in repository', function*() {
+        var repository = new InMemoryRepository()
+        var spy = sinon.spy()
+        repository.destroy = function*(id) { spy(id) }
+
+        yield repository.add(resource)
+        var pool = new Pool({repository})
+        yield pool.initialize()
+        yield pool.destroy(resource.id)
+
+        expect(spy).to.have.been.calledWith(resource.id)
+      })
+    })
+  })
+
   describe('release', function() {
     it ('returns the resource back to pool', function*() {
       var pool = new Pool()
