@@ -3,7 +3,7 @@ const RedisStorage = require('./../lib/redis_storage')
 const InMemoryStorage = require('./../lib/in_memory_storage')
 const _ = require('lodash')
 
-describe.only('concurrency', function() {
+describe('concurrency', function() {
   [RedisStorage, InMemoryStorage].forEach(function(Storage) {
     describe(Storage.name, function() {
       var storage = new Storage()

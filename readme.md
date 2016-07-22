@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/WisePricer/wisepool.svg?style=svg)](https://circleci.com/gh/WisePricer/wisepool)
+
 ### Use cases
 
 #### Async pool
