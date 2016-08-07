@@ -105,6 +105,29 @@ describe("RedisStorage", function() {
     })
   })
 
+  describe('getAcquiredForMillis', function() {
+    beforeEach(function() {
+      this.clock = sinon.useFakeTimers()
+    })
+
+    afterEach(function() {
+      this.clock.restore()
+    })
+
+    it ('returns resources that are acquired for more than millis', function*() {
+      yield storage.add({id: 1, content: 'a'})
+      yield storage.add({id: 2, content: 'b'})
+
+      yield storage.acquire()
+
+      this.clock.tick(100)
+
+      yield storage.acquire()
+
+      expect(yield storage.getAcquiredForMillis(100)).to.have.lengthOf(1)
+    })
+  })
+
   describe('getCount', function() {
     it ('returns number of acquired and pooled resources', function*() {
       yield storage.add({id: 1, content: 2})

@@ -1,6 +1,7 @@
 const Pool = require('./../lib/pool')
 const InMemoryStorage = require('./../lib/in_memory_storage')
 const InMemoryRepository = require('./../lib/in_memory_repository')
+const Bluebird = require('bluebird')
 
 describe('AbstractPool', function() {
   var resource
