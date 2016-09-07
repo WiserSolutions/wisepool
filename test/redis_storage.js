@@ -74,13 +74,24 @@ describe("RedisStorage", function() {
     it ('returns a resource', function*() {
       yield storage.add(resource)
       var r = yield storage.acquire()
-      expect(r).to.deep.equal(resource)
+      expect(r).to.matchPattern({
+        id: r.id,
+        __lastAcquiredAt: _.isNumber
+      })
     })
 
     it ('removes the resource from the pool', function*() {
       yield storage.add(resource)
       yield storage.acquire()
       expect(yield storage.getAll()).to.deep.equal([])
+    })
+
+    it ('sets lastAcquired', function*() {
+      yield storage.add(resource)
+      let start = Date.now()
+      yield storage.acquire()
+      let res = yield storage.getResource(resource.id)
+      expect(res.__lastAcquiredAt).to.be.within(start, Date.now())
     })
   })
 
@@ -89,7 +100,20 @@ describe("RedisStorage", function() {
       yield storage.add(resource)
       var res = yield storage.acquire()
       yield storage.release(res.id)
-      expect(yield storage.getAll()).to.deep.equal([resource])
+      expect(yield storage.getAll()).to.matchPattern([{
+        id: resource.id,
+        __lastAcquiredAt: _.isNumber,
+        __lastReleasedAt: _.isNumber
+      }])
+    })
+
+    it ('sets lastReleased', function*() {
+      yield storage.add(resource)
+      let res = yield storage.acquire()
+      let start = Date.now()
+      yield storage.release(res.id)
+      res = yield storage.getResource(res.id)
+      expect(res.__lastReleasedAt).to.be.within(start, Date.now())
     })
   })
 

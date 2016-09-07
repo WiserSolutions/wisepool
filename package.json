@@ -24,6 +24,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
+    "chai-match-pattern": "^0.3.0",
     "co-mocha": "^1.1.2",
     "faker": "^3.1.0",
     "mocha": "^2.5.3",

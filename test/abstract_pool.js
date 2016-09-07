@@ -9,6 +9,17 @@ describe('AbstractPool', function() {
     resource = newResource()
   })
 
+  describe('register', function() {
+    it ('initializes __registeredAt', function*() {
+      var pool = new Pool()
+      var start = Date.now()
+
+      yield pool.register(resource)
+
+      expect(resource.__registeredAt).to.be.within(start, Date.now())
+    })
+  })
+
   describe('acquire', function() {
     it ('acquires available resource', function*() {
       var pool = new Pool()
@@ -183,6 +194,48 @@ describe('AbstractPool', function() {
         yield pool.garbageCollect()
         expect(yield pool.acquire()).to.equal(resource)
       })
+    })
+  })
+
+  describe('getIdleResources', function() {
+
+    var pool
+
+    beforeEach(function*() {
+      pool = new Pool({ resourceIdleTimeoutMillis: 100 })
+      yield pool.register(resource)
+    })
+
+    it ('does not return acquired resources', function*() {
+      yield pool.acquire()
+      expect(yield pool.getIdleResources()).to.have.lengthOf(0)
+    })
+
+    it ('does not return resources released less than resourceIdleTimeoutMillis ago', function*() {
+      resource.__lastReleasedAt = Date.now()
+      expect(yield pool.getIdleResources()).to.have.lengthOf(0)
+    })
+
+    it ('returns resources released before resourceIdleTimeoutMillis', function*() {
+      resource.__lastReleasedAt = Date.now() - 101
+      expect(yield pool.getIdleResources()).to.have.lengthOf(1)
+    })
+
+    it ('does not return resources without __lastReleasedAt and __registeredAt', function*() {
+      delete resource.__lastReleasedAt
+      delete resource.__registeredAt
+      expect(yield pool.getIdleResources()).to.have.lengthOf(0)
+    })
+
+    it ('does not return resources registered within resourceIdleTimeoutMillis', function*() {
+      delete resource.__lastReleasedAt
+      expect(yield pool.getIdleResources()).to.have.lengthOf(0)
+    })
+
+    it ('returns resources with lastReleased undefined and created', function*() {
+      delete resource.__lastReleasedAt
+      resource.__registeredAt = Date.now() - 101
+      expect(yield pool.getIdleResources()).to.have.lengthOf(1)
     })
   })
 
