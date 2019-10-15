@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/WisePricer/wisepool.git"
+    "url": "git+ssh://git@github.com/WiserSolutions/wisepool.git"
   },
   "keywords": [
     "pool",
@@ -18,9 +18,9 @@
   "author": "Wiser",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/WisePricer/wisepool/issues"
+    "url": "https://github.com/WiserSolutions/wisepool/issues"
   },
-  "homepage": "https://github.com/WisePricer/wisepool#readme",
+  "homepage": "https://github.com/WiserSolutions/wisepool#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
